@@ -7,7 +7,7 @@ This repository also holds a command line interface.
 
 pytoutv, thanks to TOU.TV's public API (see
 [`toutv/config.py`](toutv/config.py) for public URLs), is able to
-retrieve lists of emissions (shows) and episodes, get emissions and episodes
+retrieve lists of shows (shows) and episodes, get shows and episodes
 informations and fetch any video file publicly distributed by the TOU.TV
 service. Informations, including video files, downloaded using pytoutv are
 for personal use only and should not be redistributed unless otherwise
@@ -174,11 +174,11 @@ CLI
 Four commands are available using the command line interface tool,
 which, after installing, is simply named `toutv`:
 
-  * `list`: lists emissions (shows) and episodes of a given emission
-  * `info`: outputs informations about an emission or an episode
+  * `list`: lists shows (shows) and episodes of a given show
+  * `info`: outputs informations about an show or an episode
   * `fetch`: fetches (downloads) a complete episode or all episodes of
-    a given emission
-  * `search`: searches amongst emissions and episodes
+    a given show
+  * `search`: searches amongst shows and episodes
 
 Additionnal features are available, like fetching or getting infos
 using a TOU.TV URL, or a caching mechanism which accelerates
@@ -203,7 +203,7 @@ Examples
 Here are a few CLI usage examples.
 
 
-### Listing all emissions
+### Listing all shows
 
     $ toutv list
     2416249839: 2030, Le Big Bang démographique
@@ -217,7 +217,7 @@ Here are a few CLI usage examples.
     ...
 
 
-### Listing episodes of a given emission
+### Listing episodes of a given show
 
     $ toutv list 'physique ou chimie'
     Physique ou chimie:
@@ -235,7 +235,7 @@ Here are a few CLI usage examples.
       ...
 
 
-### Getting informations about an emission
+### Getting informations about an show
 
     $ toutv info 'physique ou chimie'
     Physique ou chimie  [Unknown country]
@@ -282,7 +282,7 @@ Here are a few CLI usage examples.
     Série.noire.S01E05.Épisode.5...    63.7 MiB    38/260 [###----------------]  14%
 
 
-### Fetching all episodes of a given emission at average quality
+### Fetching all episodes of a given show at average quality
 
     $ toutv fetch 'en audition avec simon'
     En.audition.avec.Simon.S01E01...    16.5 MiB   15/15 [####################] 100%
@@ -291,7 +291,7 @@ Here are a few CLI usage examples.
     ...
 
 
-### Searching for episodes and emissions
+### Searching for episodes and shows
 
     $ toutv search politique
     Effective query: politique
@@ -299,7 +299,7 @@ Here are a few CLI usage examples.
     Episode: Loi 101 : Le malaise de René Lévesque (1re partie)  [1481687502]
 
       * Air date: 2010-04-27
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       En 1976, le Parti québécois remporte pour la première fois les élections sur
       la promesse d’être un bon gouvernement. Sans avoir mis la question de la
@@ -310,7 +310,7 @@ Here are a few CLI usage examples.
     Episode: Loi 101 : le combat de Camille Laurin (2e partie)  [1485812723]
 
       * Air date: 2010-05-04
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       La loi 101 sera, pour Camille Laurin, le combat de sa vie. Il s’entoure
       d’abord des meilleurs esprits de son temps pour rédiger la Charte de la langue
@@ -323,7 +323,7 @@ Here are a few CLI usage examples.
     Episode: Sommet des Amériques et Sommet des peuples  [1498400939]
 
       * Air date: 2010-05-18
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       En 2001, un sommet parallèle s’organise dans la basse-ville de Québec pour
       répliquer aux négociations officielles d’un traité de libre-échange des trois
@@ -336,7 +336,7 @@ Here are a few CLI usage examples.
     Episode: L'humour politique II : Les années 70  [1573008143]
 
       * Air date: 2010-08-17
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       Les années 70 sont fertiles en bouleversements. C’est l’ère des imitateurs, de
       la montée du féminisme et le début de l’humour au féminin. Invités : Jean-Guy

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>infos_emission_widget</class>
- <widget class="QWidget" name="infos_emission_widget">
+ <class>infos_show_widget</class>
+ <widget class="QWidget" name="infos_show_widget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -42,7 +42,7 @@
        <item row="0" column="0">
         <widget class="QLabel" name="title_label">
          <property name="text">
-          <string>Emission:</string>
+          <string>Show:</string>
          </property>
         </widget>
        </item>

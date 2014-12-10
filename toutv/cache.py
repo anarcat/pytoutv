@@ -34,19 +34,19 @@ class Cache:
     def __init__(self):
         pass
 
-    def get_emissions(self):
+    def get_shows(self):
         pass
 
-    def get_emission_episodes(self, emission_id):
+    def get_show_episodes(self, show_id):
         pass
 
     def get_page_repertoire(self):
         pass
 
-    def set_emissions(self, emissions):
+    def set_shows(self, shows):
         pass
 
-    def set_emission_episodes(self, emission_id, episodes):
+    def set_show_episodes(self, show_id, episodes):
         pass
 
     def set_page_repertoire(self, page_repertoire):
@@ -57,10 +57,10 @@ class Cache:
 
 
 class EmptyCache(Cache):
-    def get_emissions(self):
+    def get_shows(self):
         return None
 
-    def get_emission_episodes(self, emission_id):
+    def get_show_episodes(self, show_id):
         return None
 
     def get_page_repertoire(self):
@@ -102,37 +102,37 @@ class ShelveCache(Cache):
         if key in self.shelve:
             del shelve[key]
 
-    def get_emissions(self):
-        return self._get('emissions')
+    def get_shows(self):
+        return self._get('shows')
 
-    def get_emission_episodes(self, emission):
-        emid = emission.Id
-        emission_episodes = self._get('emission_episodes')
-        if emission_episodes is None:
+    def get_show_episodes(self, show):
+        emid = show.Id
+        show_episodes = self._get('show_episodes')
+        if show_episodes is None:
             return None
-        if emid not in emission_episodes:
+        if emid not in show_episodes:
             return None
 
-        return emission_episodes[emid]
+        return show_episodes[emid]
 
     def get_page_repertoire(self):
         return self._get('page_repertoire')
 
-    def set_emissions(self, emissions):
-        self._set('emissions', emissions)
+    def set_shows(self, shows):
+        self._set('shows', shows)
 
-    def set_emission_episodes(self, emission, episodes):
-        emid = emission.Id
-        emission_episodes = self._get('emission_episodes')
-        if emission_episodes is None:
-            emission_episodes = {}
-        emission_episodes[emid] = episodes
-        self._set('emission_episodes', emission_episodes)
+    def set_show_episodes(self, show, episodes):
+        emid = show.Id
+        show_episodes = self._get('show_episodes')
+        if show_episodes is None:
+            show_episodes = {}
+        show_episodes[emid] = episodes
+        self._set('show_episodes', show_episodes)
 
     def set_page_repertoire(self, page_repertoire):
         self._set('page_repertoire', page_repertoire)
 
     def invalidate(self):
-        self._del('emissions')
-        self._del('emission_episodes')
+        self._del('shows')
+        self._del('show_episodes')
         self._del('page_repertoire')

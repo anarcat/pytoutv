@@ -33,14 +33,14 @@ class QInfosFrame(Qt.QFrame):
         logging.debug('Showing none label')
         self._swap_infos_widget(self.none_label)
 
-    def show_emission(self, emission):
-        logging.debug('Showing emission infos')
-        self.emission_widget.set_emission(emission)
-        self._swap_infos_widget(self.emission_widget)
+    def show_show(self, show):
+        logging.debug('Showing show infos')
+        self.show_widget.set_show(show)
+        self._swap_infos_widget(self.show_widget)
 
-    def show_season(self, emission, season_number, episodes):
+    def show_season(self, show, season_number, episodes):
         logging.debug('Showing season infos')
-        self.season_widget.set_infos(emission, season_number, episodes)
+        self.season_widget.set_infos(show, season_number, episodes)
         self._swap_infos_widget(self.season_widget)
 
     def show_episode(self, episode):
@@ -57,16 +57,16 @@ class QInfosFrame(Qt.QFrame):
 
     def _setup_infos_widget(self):
         self._setup_none_label()
-        self.emission_widget = _QEmissionInfosWidget(self._thumb_fetcher,
+        self.show_widget = _QShowInfosWidget(self._thumb_fetcher,
                                                      self._client)
-        self.emission_widget.select_download.connect(self.select_download)
+        self.show_widget.select_download.connect(self.select_download)
         self.season_widget = _QSeasonInfosWidget()
         self.season_widget.select_download.connect(self.select_download)
         self.episode_widget = _QEpisodeInfosWidget(self._thumb_fetcher)
         self.episode_widget.select_download.connect(self.select_download)
 
         self._swappable_widgets = [
-            self.emission_widget,
+            self.show_widget,
             self.season_widget,
             self.episode_widget,
             self.none_label,
@@ -187,7 +187,7 @@ class _QInfosWidget(Qt.QWidget, utils.QtUiLoad):
         self._set_thumb()
 
 
-class _QEmissionCommonInfosWidget:
+class _QShowCommonInfosWidget:
     def _set_removal_date(self):
         removal_date = self._bo.get_removal_date()
         if removal_date is None:
@@ -223,8 +223,8 @@ class _QEmissionCommonInfosWidget:
         self._set_country()
 
 
-class _QEmissionInfosWidget(_QInfosWidget, _QEmissionCommonInfosWidget):
-    _UI_NAME = 'emission_infos_widget'
+class _QShowInfosWidget(_QInfosWidget, _QShowCommonInfosWidget):
+    _UI_NAME = 'show_infos_widget'
     _fetch_thumb_required = QtCore.pyqtSignal(object)
 
     def __init__(self, thumb_fetcher, client):
@@ -232,7 +232,7 @@ class _QEmissionInfosWidget(_QInfosWidget, _QEmissionCommonInfosWidget):
 
         self._client = client
 
-        self._setup_ui(_QEmissionInfosWidget._UI_NAME)
+        self._setup_ui(_QShowInfosWidget._UI_NAME)
         self._setup_thumb_fetching()
 
     def _setup_ui(self, ui_name):
@@ -250,21 +250,21 @@ class _QEmissionInfosWidget(_QInfosWidget, _QEmissionCommonInfosWidget):
             description = ''
         self.description_value_label.setText(description)
 
-    def set_emission(self, emission):
-        self._bo = emission
+    def set_show(self, show):
+        self._bo = show
 
         self._set_title()
         self._set_description()
         self._set_common_infos()
-        self._set_toutv_url(emission.get_url())
+        self._set_toutv_url(show.get_url())
         self._try_set_thumb()
 
     def _on_dl_btn_clicked(self):
-        episodes = self._client.get_emission_episodes(self._bo)
+        episodes = self._client.get_show_episodes(self._bo)
         self.select_download.emit(list(episodes.values()))
 
 
-class _QSeasonInfosWidget(_QInfosWidget, _QEmissionCommonInfosWidget):
+class _QSeasonInfosWidget(_QInfosWidget, _QShowCommonInfosWidget):
     _UI_NAME = 'season_infos_widget'
 
     def __init__(self):
@@ -278,15 +278,15 @@ class _QSeasonInfosWidget(_QInfosWidget, _QEmissionCommonInfosWidget):
     def _set_number_episodes(self):
         self.number_episodes_value_label.setText(str(len(self._episodes)))
 
-    def set_infos(self, emission, season_number, episodes):
-        self._bo = emission
+    def set_infos(self, show, season_number, episodes):
+        self._bo = show
         self._season_number = season_number
         self._episodes = [e.bo for e in episodes]
 
         self._set_season_number()
         self._set_number_episodes()
         self._set_common_infos()
-        self._set_toutv_url(emission.get_url())
+        self._set_toutv_url(show.get_url())
 
     def _on_dl_btn_clicked(self):
         self.select_download.emit(self._episodes)
@@ -343,9 +343,9 @@ class _QEpisodeInfosWidget(_QInfosWidget):
         self.author_value_label.setText(author)
 
     def _set_titles(self):
-        emission = self._bo.get_emission()
+        show = self._bo.get_show()
         self.title_value_label.setText(self._bo.get_title())
-        self.emission_title_value_label.setText(emission.get_title())
+        self.show_title_value_label.setText(show.get_title())
 
     def set_episode(self, episode):
         self._bo = episode

@@ -1,12 +1,12 @@
 import logging
 from PyQt4 import Qt, QtCore
-from toutvqt.emissions_treemodel import EmissionsTreeModelEmission
-from toutvqt.emissions_treemodel import EmissionsTreeModelSeason
-from toutvqt.emissions_treemodel import EmissionsTreeModelEpisode
-from toutvqt.emissions_treemodel import LoadingItem
+from toutvqt.shows_treemodel import ShowsTreeModelShow
+from toutvqt.shows_treemodel import ShowsTreeModelSeason
+from toutvqt.shows_treemodel import ShowsTreeModelEpisode
+from toutvqt.shows_treemodel import LoadingItem
 
 
-class QEmissionsTreeViewStyleDelegate(Qt.QStyledItemDelegate):
+class QShowsTreeViewStyleDelegate(Qt.QStyledItemDelegate):
     def __init__(self):
         super().__init__()
 
@@ -16,8 +16,8 @@ class QEmissionsTreeViewStyleDelegate(Qt.QStyledItemDelegate):
         Qt.QStyledItemDelegate.paint(self, painter, option, index)
 
 
-class QEmissionsTreeView(Qt.QTreeView):
-    emission_selected = QtCore.pyqtSignal(object)
+class QShowsTreeView(Qt.QTreeView):
+    show_selected = QtCore.pyqtSignal(object)
     season_selected = QtCore.pyqtSignal(object, int, list)
     episode_selected = QtCore.pyqtSignal(object)
     none_selected = QtCore.pyqtSignal()
@@ -34,7 +34,7 @@ class QEmissionsTreeView(Qt.QTreeView):
         selection_model = Qt.QItemSelectionModel(model)
         self.setSelectionModel(selection_model)
 
-        self.setItemDelegate(QEmissionsTreeViewStyleDelegate())
+        self.setItemDelegate(QShowsTreeViewStyleDelegate())
 
         selection_model.selectionChanged.connect(self.item_selection_changed)
 
@@ -62,12 +62,12 @@ class QEmissionsTreeView(Qt.QTreeView):
 
         index = indexes[0]
         item = index.internalPointer()
-        if type(item) == EmissionsTreeModelEmission:
-            self.emission_selected.emit(item.bo)
-        elif type(item) == EmissionsTreeModelSeason:
-            self.season_selected.emit(item.emission.bo, item.number,
+        if type(item) == ShowsTreeModelShow:
+            self.show_selected.emit(item.bo)
+        elif type(item) == ShowsTreeModelSeason:
+            self.season_selected.emit(item.show.bo, item.number,
                                       item.episodes)
-        elif type(item) == EmissionsTreeModelEpisode:
+        elif type(item) == ShowsTreeModelEpisode:
             self.episode_selected.emit(item.bo)
         else:
             self.none_selected.emit()

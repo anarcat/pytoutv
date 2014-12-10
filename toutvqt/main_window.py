@@ -6,8 +6,8 @@ from PyQt4 import QtGui
 from toutvqt.download_manager import QDownloadManager
 from toutvqt.downloads_tablemodel import QDownloadsTableModel
 from toutvqt.downloads_tableview import QDownloadsTableView
-from toutvqt.emissions_treeview import QEmissionsTreeView
-from toutvqt.emissions_treemodel import EmissionsTreeModel
+from toutvqt.shows_treeview import QShowsTreeView
+from toutvqt.shows_treemodel import ShowsTreeModel
 from toutvqt.about_dialog import QTouTvAboutDialog
 from toutvqt.preferences_dialog import QTouTvPreferencesDialog
 from toutvqt.choose_bitrate_dialog import QChooseBitrateDialog, SymbolicQuality,\
@@ -31,14 +31,14 @@ class QTouTvMainWindow(Qt.QMainWindow, utils.QtUiLoad):
         self._setup_ui()
 
     def _add_treeview(self):
-        model = EmissionsTreeModel(self._client)
+        model = ShowsTreeModel(self._client)
         model.fetching_start.connect(self._on_treeview_fetch_start)
         model.fetching_done.connect(self._on_treeview_fetch_done)
         self._treeview_model = model
 
-        treeview = QEmissionsTreeView(model)
-        self.emissions_treeview = treeview
-        self.emissions_tab.layout().addWidget(treeview)
+        treeview = QShowsTreeView(model)
+        self.shows_treeview = treeview
+        self.shows_tab.layout().addWidget(treeview)
 
     def _add_tableview(self):
         settings = self._app.get_settings()
@@ -57,16 +57,16 @@ class QTouTvMainWindow(Qt.QMainWindow, utils.QtUiLoad):
     def _add_infos(self):
         self.infos_frame = QInfosFrame(self._client)
         self.infos_frame.select_download.connect(self._on_select_download)
-        self.emissions_tab.layout().addWidget(self.infos_frame)
-        treeview = self.emissions_treeview
-        treeview.emission_selected.connect(self.infos_frame.show_emission)
+        self.shows_tab.layout().addWidget(self.infos_frame)
+        treeview = self.shows_treeview
+        treeview.show_selected.connect(self.infos_frame.show_show)
         treeview.season_selected.connect(self.infos_frame.show_season)
         treeview.episode_selected.connect(self.infos_frame.show_episode)
         treeview.none_selected.connect(self.infos_frame.show_infos_none)
 
     def _setup_file_menu(self):
         self.quit_action.triggered.connect(self._app.closeAllWindows)
-        self.refresh_emissions_action.triggered.connect(
+        self.refresh_shows_action.triggered.connect(
             self._treeview_model.reset)
 
     def _setup_edit_menu(self):
@@ -90,7 +90,7 @@ class QTouTvMainWindow(Qt.QMainWindow, utils.QtUiLoad):
     def _setup_icons(self):
         self.setWindowIcon(utils.get_qicon('toutv'))
         self._setup_action_icon('quit_action')
-        self._setup_action_icon('refresh_emissions_action')
+        self._setup_action_icon('refresh_shows_action')
         self._setup_action_icon('preferences_action')
         self._setup_action_icon('about_action')
 
@@ -119,11 +119,11 @@ class QTouTvMainWindow(Qt.QMainWindow, utils.QtUiLoad):
         self._treeview_model.exit()
 
     def _setup_ui_post_show(self):
-        self.emissions_treeview.set_default_columns_widths()
+        self.shows_treeview.set_default_columns_widths()
 
     def start(self):
         logging.debug('Starting main window')
-        self.emissions_treeview.model().init_fetch()
+        self.shows_treeview.model().init_fetch()
         self.show()
         self._setup_ui_post_show()
 
@@ -155,10 +155,10 @@ class QTouTvMainWindow(Qt.QMainWindow, utils.QtUiLoad):
             self._downloads_tableview_model.remove_episode_id_item(eid)
 
     def _on_treeview_fetch_start(self):
-        self.refresh_emissions_action.setEnabled(False)
+        self.refresh_shows_action.setEnabled(False)
 
     def _on_treeview_fetch_done(self):
-        self.refresh_emissions_action.setEnabled(True)
+        self.refresh_shows_action.setEnabled(True)
 
     def _show_choose_bitrate_dialog(self, episodes, qualities, btn_class):
         pos = QtGui.QCursor().pos()

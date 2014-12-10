@@ -39,10 +39,10 @@ class Transport:
     def set_proxies(self, proxies):
         pass
 
-    def get_emissions(self):
+    def get_shows(self):
         pass
 
-    def get_emission_episodes(self, emission_id):
+    def get_show_episodes(self, show_id):
         pass
 
     def get_page_repertoire(self):
@@ -78,27 +78,27 @@ class JsonTransport(Transport):
 
         return response_obj['d']
 
-    def get_emissions(self):
-        emissions = {}
+    def get_shows(self):
+        shows = {}
 
-        emissions_dto = self._do_query('GetEmissions')
-        for emission_dto in emissions_dto:
-            emission = self._mapper.dto_to_bo(emission_dto, bos.Emission)
-            emissions[emission.Id] = emission
+        shows_dto = self._do_query('GetShows')
+        for show_dto in shows_dto:
+            show = self._mapper.dto_to_bo(show_dto, bos.Show)
+            shows[show.Id] = show
 
-        return emissions
+        return shows
 
-    def get_emission_episodes(self, emission):
-        emid = emission.Id
+    def get_show_episodes(self, show):
+        emid = show.Id
         episodes = {}
         params = {
-            'emissionid': str(emid)
+            'showid': str(emid)
         }
 
-        episodes_dto = self._do_query('GetEpisodesForEmission', params)
+        episodes_dto = self._do_query('GetEpisodesForShow', params)
         for episode_dto in episodes_dto:
             episode = self._mapper.dto_to_bo(episode_dto, bos.Episode)
-            episode.set_emission(emission)
+            episode.set_show(show)
             episodes[episode.Id] = episode
 
         return episodes
@@ -108,14 +108,14 @@ class JsonTransport(Transport):
 
         repertoire = bos.Repertoire()
 
-        # Emissions
-        if 'Emissions' in repertoire_dto:
-            repertoire.Emissions = {}
-            emissionrepertoires_dto = repertoire_dto['Emissions']
-            for emissionrepertoire_dto in emissionrepertoires_dto:
-                er = self._mapper.dto_to_bo(emissionrepertoire_dto,
-                                            bos.EmissionRepertoire)
-                repertoire.Emissions[er.Id] = er
+        # Shows
+        if 'Shows' in repertoire_dto:
+            repertoire.Shows = {}
+            showrepertoires_dto = repertoire_dto['Shows']
+            for showrepertoire_dto in showrepertoires_dto:
+                er = self._mapper.dto_to_bo(showrepertoire_dto,
+                                            bos.ShowRepertoire)
+                repertoire.Shows[er.Id] = er
 
         # Genre
         if 'Genres' in repertoire_dto:

@@ -49,9 +49,9 @@ class JsonMapper(Mapper):
                 if typ in ['GenreDTO:#RC.Svc.Web.TouTV',
                            'GenreDTO:RC.Svc.Web.TouTV']:
                     value = self.dto_to_bo(value, bos.Genre)
-                elif typ in ['EmissionDTO:#RC.Svc.Web.TouTV',
-                             'EmissionDTO:RC.Svc.Web.TouTV']:
-                    value = self.dto_to_bo(value, bos.Emission)
+                elif typ in ['ShowDTO:#RC.Svc.Web.TouTV',
+                             'ShowDTO:RC.Svc.Web.TouTV']:
+                    value = self.dto_to_bo(value, bos.Show)
                 elif typ in ['EpisodeDTO:#RC.Svc.Web.TouTV',
                              'EpisodeDTO:RC.Svc.Web.TouTV']:
                     value = self.dto_to_bo(value, bos.Episode)

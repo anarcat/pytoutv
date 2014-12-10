@@ -39,9 +39,9 @@ class LoadingItem:
             return Qt.QModelIndex()
 
 
-class EmissionsTreeModelEmission:
-    def __init__(self, emission_bo, row_in_parent):
-        self.bo = emission_bo
+class ShowsTreeModelShow:
+    def __init__(self, show_bo, row_in_parent):
+        self.bo = show_bo
         self.seasons = []
         self.loading_item = LoadingItem(self)
         self.row_in_parent = row_in_parent
@@ -73,7 +73,7 @@ class EmissionsTreeModelEmission:
             return createIndex(row, column, self.loading_item)
 
     def parent(self, child, createIndex):
-        # An emission is at root level
+        # An show is at root level
         return Qt.QModelIndex()
 
     def should_fetch(self):
@@ -83,7 +83,7 @@ class EmissionsTreeModelEmission:
         self.seasons = c
 
 
-class EmissionsTreeModelSeason:
+class ShowsTreeModelSeason:
     def __init__(self, number, row_in_parent):
         self.number = number
         self.episodes = []
@@ -95,7 +95,7 @@ class EmissionsTreeModelSeason:
             if column == 0:
                 return 'S{:02}'.format(self.number)
             elif column == 1:
-                network = self.emission.bo.get_network()
+                network = self.show.bo.get_network()
                 if network is None:
                     network = ''
 
@@ -113,10 +113,10 @@ class EmissionsTreeModelSeason:
         return False
 
     def parent(self, child, createIndex):
-        return createIndex(self.row_in_parent, 0, self.emission)
+        return createIndex(self.row_in_parent, 0, self.show)
 
 
-class EmissionsTreeModelEpisode:
+class ShowsTreeModelEpisode:
     def __init__(self, bo, row_in_parent):
         self.bo = bo
         self.loading_item = LoadingItem(self)
@@ -128,8 +128,8 @@ class EmissionsTreeModelEpisode:
             if column == 0:
                 return self.bo.get_title()
             elif column == 1:
-                emission = self.bo.get_emission()
-                network = emission.get_network()
+                show = self.bo.get_show()
+                network = show.get_network()
                 if network is None:
                     network = ''
 
@@ -148,7 +148,7 @@ class EmissionsTreeModelEpisode:
         return 0
 
     def index(self, row, column, createIndex):
-        msg = 'Internal error: index() called on EmissionsTreeModelEpisode'
+        msg = 'Internal error: index() called on ShowsTreeModelEpisode'
         logging.error(msg)
         return Qt.QModelIndex()
 
@@ -156,7 +156,7 @@ class EmissionsTreeModelEpisode:
         return createIndex(self.row_in_parent, 0, self.season)
 
 
-class EmissionsTreeModel(Qt.QAbstractItemModel):
+class ShowsTreeModel(Qt.QAbstractItemModel):
     _HEADER = [
         'Title',
         'Network',
@@ -168,17 +168,17 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
 
     def __init__(self, client):
         super().__init__()
-        self.emissions = []
+        self.shows = []
         self.loading_item = LoadingItem(None)
 
-        # Have we fetched the emissions?
+        # Have we fetched the shows?
         self.fetched = FetchState.NOPE
 
         # Setup fetch thread and signal connections
         self.fetch_thread = Qt.QThread()
         self.fetch_thread.start()
 
-        self.fetcher = EmissionsTreeModelFetcher(client)
+        self.fetcher = ShowsTreeModelFetcher(client)
         self.fetcher.moveToThread(self.fetch_thread)
         self.fetch_required.connect(self.fetcher.new_work_piece)
         self.fetcher.fetch_done.connect(self.fetch_done)
@@ -194,10 +194,10 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
     def index(self, row, column, parent=Qt.QModelIndex()):
         """Returns a QModelIndex to represent a cell of a child of parent."""
         if not parent.isValid():
-            # Create an index for a emission
+            # Create an index for a show
             if self.fetched == FetchState.DONE:
-                emission = self.emissions[row]
-                return self.createIndex(row, column, emission)
+                show = self.shows[row]
+                return self.createIndex(row, column, show)
             else:
                 return self.createIndex(row, column, self.loading_item)
         else:
@@ -211,7 +211,7 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
     def rowCount(self, parent=Qt.QModelIndex()):
         if not parent.isValid():
             if self.fetched == FetchState.DONE:
-                return len(self.emissions)
+                return len(self.shows)
             else:
                 # The "Loading" item
                 return 1
@@ -237,7 +237,7 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
         if parent.isValid():
             parent.internalPointer().set_children(children_list)
         else:
-            self.emissions = children_list
+            self.shows = children_list
         self.endInsertRows()
 
         self.fetching_done.emit()
@@ -251,7 +251,7 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
         self.fetching_done.emit()
 
     def init_fetch(self, parent=Qt.QModelIndex()):
-        logging.debug('Initializing emissions fetching')
+        logging.debug('Initializing shows fetching')
 
         if parent.isValid():
             parent.internalPointer().fetched = FetchState.STARTED
@@ -275,11 +275,11 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
 
     def headerData(self, section, orientation, role=QtCore.Qt.DisplayRole):
         if role == QtCore.Qt.DisplayRole:
-            return EmissionsTreeModel._HEADER[section]
+            return ShowsTreeModel._HEADER[section]
 
     def _on_about_to_reset(self):
         if self.fetched == FetchState.DONE:
-            self.emissions = []
+            self.shows = []
             self.fetched = FetchState.NOPE
 
     def _on_model_reset(self):
@@ -287,7 +287,7 @@ class EmissionsTreeModel(Qt.QAbstractItemModel):
             self.init_fetch()
 
 
-class EmissionsTreeModelFetcher(Qt.QObject):
+class ShowsTreeModelFetcher(Qt.QObject):
     fetch_done = QtCore.pyqtSignal(object, list)
     fetch_error = QtCore.pyqtSignal(object, object)
 
@@ -297,16 +297,16 @@ class EmissionsTreeModelFetcher(Qt.QObject):
 
     def new_work_piece(self, parent):
         if not parent.isValid():
-            self.fetch_emissions(parent)
-        elif type(parent.internalPointer()) == EmissionsTreeModelEmission:
+            self.fetch_shows(parent)
+        elif type(parent.internalPointer()) == ShowsTreeModelShow:
             self.fetch_seasons(parent)
-        elif type(parent.internalPointer()) == EmissionsTreeModelSeason:
+        elif type(parent.internalPointer()) == ShowsTreeModelSeason:
             self.fetch_episodes(parent)
 
-    def fetch_emissions(self, parent):
+    def fetch_shows(self, parent):
         def key_func(ekey):
             # Cheap and easy way to sort latin titles (which is the case here)
-            emission_title = emissions[ekey].get_title()
+            show_title = shows[ekey].get_title()
             reps = [
                 ('[àáâä]', 'a'),
                 ('[ÀÁÂÄ]', 'A'),
@@ -322,39 +322,39 @@ class EmissionsTreeModelFetcher(Qt.QObject):
                 ('Ç', 'C'),
             ]
             for regex, rep in reps:
-                emission_title = re.sub(regex, rep, emission_title)
+                show_title = re.sub(regex, rep, show_title)
 
-            return emission_title.lower()
+            return show_title.lower()
 
-        logging.debug('Fetching emissions')
+        logging.debug('Fetching shows')
 
         try:
-            emissions = self.client.get_page_repertoire().get_emissions()
+            shows = self.client.get_page_repertoire().get_shows()
         except Exception as e:
             self.fetch_error.emit(parent, e)
             return
 
         # Sort
-        emissions_keys = list(emissions.keys())
-        emissions_keys.sort(key=key_func)
+        shows_keys = list(shows.keys())
+        shows_keys.sort(key=key_func)
 
-        emissions_ret = []
-        for i, ekey in enumerate(emissions_keys):
-            emission = emissions[ekey]
-            new_emission = EmissionsTreeModelEmission(emission, i)
-            emissions_ret.append(new_emission)
+        shows_ret = []
+        for i, ekey in enumerate(shows_keys):
+            show = shows[ekey]
+            new_show = ShowsTreeModelShow(show, i)
+            shows_ret.append(new_show)
 
-        self.fetch_done.emit(parent, emissions_ret)
+        self.fetch_done.emit(parent, shows_ret)
 
     def fetch_seasons(self, parent):
-        emission = parent.internalPointer()
+        show = parent.internalPointer()
         seasons_list = []
         seasons_dict = {}
 
         logging.debug('Fetching seasons/episodes')
 
         try:
-            episodes = self.client.get_emission_episodes(emission.bo)
+            episodes = self.client.get_show_episodes(show.bo)
         except Exception as e:
             self.fetch_error.emit(parent, e)
             return
@@ -372,10 +372,10 @@ class EmissionsTreeModelFetcher(Qt.QObject):
 
         for i, season_number in enumerate(seasons_dict):
             episodes = seasons_dict[season_number]
-            new_season = EmissionsTreeModelSeason(season_number, i)
-            new_season.emission = emission
+            new_season = ShowsTreeModelSeason(season_number, i)
+            new_season.show = show
             for (j, ep) in enumerate(episodes):
-                new_episode = EmissionsTreeModelEpisode(ep, j)
+                new_episode = ShowsTreeModelEpisode(ep, j)
                 new_episode.season = new_season
                 new_season.episodes.append(new_episode)
             seasons_list.append(new_season)

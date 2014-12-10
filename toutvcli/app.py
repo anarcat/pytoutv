@@ -138,20 +138,20 @@ class App:
 
         # list command
         pl = sp.add_parser('list',
-                           help='List emissions or episodes of an emission')
-        pl.add_argument('emission', action='store', nargs='?', type=str,
-                        help='List all episodes of an emission')
+                           help='List shows or episodes of an show')
+        pl.add_argument('show', action='store', nargs='?', type=str,
+                        help='List all episodes of an show')
         pl.add_argument('-a', '--all', action='store_true',
-                        help='List emissions without episodes')
+                        help='List shows without episodes')
         pl.add_argument('-n', '--no-cache', action='store_true',
                         help='Disable cache')
         pl.set_defaults(func=self._command_list)
 
         # info command
         pi = sp.add_parser('info',
-                           help='Get emission or episode information')
-        pi.add_argument('emission', action='store', type=str,
-                        help='Emission name for which to get information')
+                           help='Get show or episode information')
+        pi.add_argument('show', action='store', type=str,
+                        help='Show name for which to get information')
         pi.add_argument('episode', action='store', nargs='?', type=str,
                         help='Episode name for which to get information')
         pi.add_argument('-n', '--no-cache', action='store_true',
@@ -162,21 +162,21 @@ class App:
 
         # search command
         ps = sp.add_parser('search',
-                           help='Search TOU.TV emissions or episodes')
+                           help='Search TOU.TV shows or episodes')
         ps.add_argument('query', action='store', type=str,
                         help='Search query')
         ps.set_defaults(func=self._command_search)
 
         # fetch command
         pf = sp.add_parser('fetch',
-                           help='Fetch one or all episodes of an emission')
+                           help='Fetch one or all episodes of an show')
         quality_choices = [
             App.QUALITY_MIN,
             App.QUALITY_AVG,
             App.QUALITY_MAX
         ]
-        pf.add_argument('emission', action='store', type=str,
-                        help='Emission name to fetch')
+        pf.add_argument('show', action='store', type=str,
+                        help='Show name to fetch')
         pf.add_argument('episode', action='store', nargs='?', type=str,
                         help='Episode name to fetch')
         pf.add_argument('-b', '--bitrate', action='store', type=int,
@@ -228,22 +228,22 @@ class App:
         return toutv.client.Client(cache=cache)
 
     def _command_list(self, args):
-        if args.emission:
-            self._print_list_episodes_name(args.emission)
+        if args.show:
+            self._print_list_episodes_name(args.show)
         else:
-            self._print_list_emissions(args.all)
+            self._print_list_shows(args.all)
 
     def _command_info(self, args):
         if args.url:
-            em = args.emission
+            em = args.show
             episode = self._toutvclient.get_episode_from_url(em)
             self._print_info_episode(episode)
             return
 
         if args.episode:
-            self._print_info_episode_name(args.emission, args.episode)
+            self._print_info_episode_name(args.show, args.episode)
         else:
-            self._print_info_emission_name(args.emission)
+            self._print_info_show_name(args.show)
 
     def _command_fetch(self, args):
         output_dir = args.directory
@@ -251,21 +251,21 @@ class App:
         quality = args.quality
 
         if args.url:
-            em = args.emission
+            em = args.show
             episode = self._toutvclient.get_episode_from_url(em)
             self._fetch_episode(episode, output_dir=output_dir,
                                 quality=quality, bitrate=bitrate,
                                 overwrite=args.force)
             return
 
-        if args.emission is not None and args.episode is None:
-            self._fetch_emission_episodes_name(args.emission,
+        if args.show is not None and args.episode is None:
+            self._fetch_show_episodes_name(args.show,
                                                output_dir=args.directory,
                                                quality=args.quality,
                                                bitrate=args.bitrate,
                                                overwrite=args.force)
-        elif args.emission is not None and args.episode is not None:
-            self._fetch_episode_name(args.emission, args.episode,
+        elif args.show is not None and args.episode is not None:
+            self._fetch_episode_name(args.show, args.episode,
                                      output_dir=output_dir, quality=quality,
                                      bitrate=bitrate, overwrite=args.force)
 
@@ -283,14 +283,14 @@ class App:
             return
 
         for result in searchresult.get_results():
-            if result.get_emission() is not None:
-                emission = result.get_emission()
-                print('Emission: {}  [{}]'.format(emission.get_title(),
-                                                  emission.get_id()))
+            if result.get_show() is not None:
+                show = result.get_show()
+                print('Show: {}  [{}]'.format(show.get_title(),
+                                                  show.get_id()))
 
-                if emission.get_description():
+                if show.get_description():
                     print('')
-                    description = textwrap.wrap(emission.get_description(), 78)
+                    description = textwrap.wrap(show.get_description(), 78)
                     for line in description:
                         print('  {}'.format(line))
 
@@ -306,9 +306,9 @@ class App:
                     line = '  * Air date: {}'.format(air_date)
                     infos_lines.append(line)
 
-                emission_id = episode.get_emission_id()
-                if emission_id is not None:
-                    line = '  * Emission ID: {}'.format(emission_id)
+                show_id = episode.get_show_id()
+                if show_id is not None:
+                    line = '  * Show ID: {}'.format(show_id)
                     infos_lines.append(line)
 
                 if infos_lines:
@@ -324,29 +324,29 @@ class App:
 
             print('\n')
 
-    def _print_list_emissions(self, all=False):
+    def _print_list_shows(self, all=False):
         if all:
-            emissions = self._toutvclient.get_emissions()
-            emissions_keys = list(emissions.keys())
-            title_func = lambda ekey: emissions[ekey].get_title()
+            shows = self._toutvclient.get_shows()
+            shows_keys = list(shows.keys())
+            title_func = lambda ekey: shows[ekey].get_title()
             id_func = lambda ekey: ekey
         else:
             repertoire = self._toutvclient.get_page_repertoire()
-            repertoire_emissions = repertoire.get_emissions()
-            emissions_keys = list(repertoire_emissions.keys())
-            title_func = lambda ekey: repertoire_emissions[ekey].get_title()
+            repertoire_shows = repertoire.get_shows()
+            shows_keys = list(repertoire_shows.keys())
+            title_func = lambda ekey: repertoire_shows[ekey].get_title()
             id_func = lambda ekey: ekey
 
-        emissions_keys.sort(key=title_func)
-        for ekey in emissions_keys:
+        shows_keys.sort(key=title_func)
+        for ekey in shows_keys:
             emid = id_func(ekey)
             title = title_func(ekey)
             print('{}: {}'.format(emid, title))
 
-    def _print_list_episodes(self, emission):
-        episodes = self._toutvclient.get_emission_episodes(emission)
+    def _print_list_episodes(self, show):
+        episodes = self._toutvclient.get_show_episodes(show)
 
-        print('{}:\n'.format(emission.get_title()))
+        print('{}:\n'.format(show.get_title()))
         if len(episodes) == 0:
             print('No available episodes')
             return
@@ -360,38 +360,38 @@ class App:
             title = episode.get_title()
             print('  * {}: {} {}'.format(ekey, sae, title))
 
-    def _print_list_episodes_name(self, emission_name):
+    def _print_list_episodes_name(self, show_name):
         try:
-            emission = self._toutvclient.get_emission_by_name(emission_name)
+            show = self._toutvclient.get_show_by_name(show_name)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
 
-        self._print_list_episodes(emission)
+        self._print_list_episodes(show)
 
-    def _print_info_emission(self, emission):
-        inner = emission.get_country()
+    def _print_info_show(self, show):
+        inner = show.get_country()
         if inner is None:
             inner = 'Unknown country'
-        if emission.get_year() is not None:
-            inner = '{}, {}'.format(inner, emission.get_year())
-        print('{}  [{}]'.format(emission.get_title(), inner))
+        if show.get_year() is not None:
+            inner = '{}, {}'.format(inner, show.get_year())
+        print('{}  [{}]'.format(show.get_title(), inner))
 
-        if emission.get_description() is not None:
+        if show.get_description() is not None:
             print('')
-            description = textwrap.wrap(emission.get_description(), 80)
+            description = textwrap.wrap(show.get_description(), 80)
             for line in description:
                 print(line)
 
         infos_lines = []
-        if emission.get_network() is not None:
-            line = '  * Network: {}'.format(emission.get_network())
+        if show.get_network() is not None:
+            line = '  * Network: {}'.format(show.get_network())
             infos_lines.append(line)
-        removal_date = emission.get_removal_date()
+        removal_date = show.get_removal_date()
         if removal_date is not None:
             line = '  * Removal date: {}'.format(removal_date)
             infos_lines.append(line)
-        tags = emission.get_tags()
+        tags = show.get_tags()
         if tags:
             tags_list = ', '.join(tags)
             line = '  * Tags: {}'.format(tags_list)
@@ -402,20 +402,20 @@ class App:
             for line in infos_lines:
                 print(line)
 
-    def _print_info_emission_name(self, emission_name):
+    def _print_info_show_name(self, show_name):
         try:
-            emission = self._toutvclient.get_emission_by_name(emission_name)
+            show = self._toutvclient.get_show_by_name(show_name)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
 
-        self._print_info_emission(emission)
+        self._print_info_show(show)
 
     def _print_info_episode(self, episode):
-        emission = episode.get_emission()
+        show = episode.get_show()
         qualities = episode.get_available_qualities()
 
-        print(emission.get_title())
+        print(show.get_title())
         print('{}  [{}]'.format(episode.get_title(), episode.get_sae()))
 
         if episode.get_description() is not None:
@@ -444,16 +444,16 @@ class App:
         for line in infos_lines:
             print(line)
 
-    def _print_info_episode_name(self, emission_name, episode_name):
+    def _print_info_episode_name(self, show_name, episode_name):
         try:
-            emission = self._toutvclient.get_emission_by_name(emission_name)
+            show = self._toutvclient.get_show_by_name(show_name)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
 
         try:
             epname = episode_name
-            episode = self._toutvclient.get_episode_by_name(emission, epname)
+            episode = self._toutvclient.get_episode_by_name(show, epname)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
@@ -526,17 +526,17 @@ class App:
         # Finished
         self._dl = None
 
-    def _fetch_episode_name(self, emission_name, episode_name, output_dir,
+    def _fetch_episode_name(self, show_name, episode_name, output_dir,
                             quality, bitrate, overwrite):
         try:
-            emission = self._toutvclient.get_emission_by_name(emission_name)
+            show = self._toutvclient.get_show_by_name(show_name)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
 
         try:
             epname = episode_name
-            episode = self._toutvclient.get_episode_by_name(emission, epname)
+            episode = self._toutvclient.get_episode_by_name(show, epname)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
@@ -544,13 +544,13 @@ class App:
         self._fetch_episode(episode, output_dir=output_dir, quality=quality,
                             bitrate=bitrate, overwrite=overwrite)
 
-    def _fetch_emission_episodes(self, emission, output_dir, bitrate, quality,
+    def _fetch_show_episodes(self, show, output_dir, bitrate, quality,
                                  overwrite):
-        episodes = self._toutvclient.get_emission_episodes(emission)
+        episodes = self._toutvclient.get_show_episodes(show)
 
         if not episodes:
-            title = emission.get_title()
-            print('No episodes available for emission "{}"'.format(title))
+            title = show.get_title()
+            print('No episodes available for show "{}"'.format(title))
             return
 
         for episode in episodes.values():
@@ -580,15 +580,15 @@ class App:
                 tmpl = 'Error: cannot fetch "{}"'
                 print(tmpl.format(title), file=sys.stderr)
 
-    def _fetch_emission_episodes_name(self, emission_name, output_dir, bitrate,
+    def _fetch_show_episodes_name(self, show_name, output_dir, bitrate,
                                       quality, overwrite):
         try:
-            emission = self._toutvclient.get_emission_by_name(emission_name)
+            show = self._toutvclient.get_show_by_name(show_name)
         except toutv.client.NoMatchException as e:
             self._handle_no_match_exception(e)
             return
 
-        self._fetch_emission_episodes(emission, output_dir, bitrate, quality,
+        self._fetch_show_episodes(show, output_dir, bitrate, quality,
                                       overwrite)
 
 

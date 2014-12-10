@@ -20,7 +20,7 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="emissions_tab">
+      <widget class="QWidget" name="shows_tab">
        <attribute name="title">
         <string>E&amp;missions</string>
        </attribute>
@@ -68,7 +68,7 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="refresh_emissions_action"/>
+    <addaction name="refresh_shows_action"/>
    </widget>
    <addaction name="file_menu"/>
    <addaction name="edit_menu"/>
@@ -108,9 +108,9 @@
     <enum>QAction::AboutQtRole</enum>
    </property>
   </action>
-  <action name="refresh_emissions_action">
+  <action name="refresh_shows_action">
    <property name="text">
-    <string>&amp;Refresh emissions</string>
+    <string>&amp;Refresh shows</string>
    </property>
    <property name="shortcut">
     <string>F5</string>

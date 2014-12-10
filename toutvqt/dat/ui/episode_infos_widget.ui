@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>infos_emission_widget</class>
- <widget class="QWidget" name="infos_emission_widget">
+ <class>infos_show_widget</class>
+ <widget class="QWidget" name="infos_show_widget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -51,14 +51,14 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="emission_label">
+        <widget class="QLabel" name="show_label">
          <property name="text">
-          <string>Emission:</string>
+          <string>Show:</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLabel" name="emission_title_value_label">
+        <widget class="QLabel" name="show_title_value_label">
          <property name="text">
           <string>En audition avec Simon</string>
          </property>

@@ -109,7 +109,7 @@ class _ThumbnailProvider:
         raise NotImplementedError()
 
 
-class _AbstractEmission(_Bo):
+class _AbstractShow(_Bo):
     def get_id(self):
         return self.Id
 
@@ -142,7 +142,7 @@ class _AbstractEmission(_Bo):
         return '{} ({})'.format(self.get_title(), self.get_id())
 
 
-class Emission(_AbstractEmission, _ThumbnailProvider):
+class Show(_AbstractShow, _ThumbnailProvider):
     def __init__(self):
         self.CategoryURL = None
         self.ClassCategory = None
@@ -376,7 +376,7 @@ class Episode(_Bo, _ThumbnailProvider):
         self.TitleID = None
         self.TitleSearch = None
         self.Url = None
-        self.UrlEmission = None
+        self.UrlShow = None
         self.Year = None
         self.iTunesLinkUrl = None
 
@@ -416,7 +416,7 @@ class Episode(_Bo, _ThumbnailProvider):
     def get_description(self):
         return _clean_description(self.Description)
 
-    def get_emission_id(self):
+    def get_show_id(self):
         return self.CategoryId
 
     def get_length(self):
@@ -434,11 +434,11 @@ class Episode(_Bo, _ThumbnailProvider):
 
         return dt.date()
 
-    def set_emission(self, emission):
-        self._emission = emission
+    def set_show(self, show):
+        self._show = show
 
-    def get_emission(self):
-        return self._emission
+    def get_show(self):
+        return self._show
 
     @staticmethod
     def _get_video_qualities(playlist):
@@ -488,7 +488,7 @@ class Episode(_Bo, _ThumbnailProvider):
         return '{} ({})'.format(self.get_title(), self.get_id())
 
 
-class EmissionRepertoire(_AbstractEmission):
+class ShowRepertoire(_AbstractShow):
     def __init__(self):
         self.AnneeProduction = None
         self.CategorieDuree = None
@@ -534,11 +534,11 @@ class SearchResults(_Bo):
 
 class SearchResultData(_Bo):
     def __init__(self):
-        self.Emission = None
+        self.Show = None
         self.Episode = None
 
-    def get_emission(self):
-        return self.Emission
+    def get_show(self):
+        return self.Show
 
     def get_episode(self):
         return self.Episode
@@ -546,12 +546,12 @@ class SearchResultData(_Bo):
 
 class Repertoire(_Bo):
     def __init__(self):
-        self.Emissions = None
+        self.Shows = None
         self.Genres = None
         self.Pays = None
 
-    def set_emissions(self, emissions):
-        self.Emissions = emissions
+    def set_shows(self, shows):
+        self.Shows = shows
 
-    def get_emissions(self):
-        return self.Emissions
+    def get_shows(self):
+        return self.Shows

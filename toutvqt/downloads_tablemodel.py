@@ -152,7 +152,7 @@ class _DownloadItem:
 
 class QDownloadsTableModel(Qt.QAbstractTableModel):
     _HEADER = [
-        'Emission',
+        'Show',
         'Season/ep.',
         'Episode',
         'Filename',
@@ -400,8 +400,8 @@ class QDownloadsTableModel(Qt.QAbstractTableModel):
             quality = work.quality
 
             if col == 0:
-                # Emission
-                return episode.get_emission().get_title()
+                # Show
+                return episode.get_show().get_title()
             elif col == 1:
                 # Season/episode
                 return episode.get_sae()

@@ -70,43 +70,43 @@ class Client:
         for bo in bos:
             self._set_bo_proxies(bo)
 
-    def get_emissions(self):
-        emissions = self._cache.get_emissions()
-        if emissions is None:
-            emissions = self._transport.get_emissions()
-            self._cache.set_emissions(emissions)
+    def get_shows(self):
+        shows = self._cache.get_shows()
+        if shows is None:
+            shows = self._transport.get_shows()
+            self._cache.set_shows(shows)
 
-        self._set_bos_proxies(emissions.values())
+        self._set_bos_proxies(shows.values())
 
-        return emissions
+        return shows
 
-    def get_emission_episodes(self, emission):
-        episodes = self._cache.get_emission_episodes(emission)
+    def get_show_episodes(self, show):
+        episodes = self._cache.get_show_episodes(show)
         if episodes is None:
-            episodes = self._transport.get_emission_episodes(emission)
-            self._cache.set_emission_episodes(emission, episodes)
+            episodes = self._transport.get_show_episodes(show)
+            self._cache.set_show_episodes(show, episodes)
 
         self._set_bos_proxies(episodes.values())
 
         return episodes
 
     def get_page_repertoire(self):
-        # Get repertoire emissions
+        # Get repertoire shows
         page_repertoire = self._cache.get_page_repertoire()
         if page_repertoire is None:
             page_repertoire = self._transport.get_page_repertoire()
             self._cache.set_page_repertoire(page_repertoire)
-        rep_em = page_repertoire.get_emissions()
+        rep_em = page_repertoire.get_shows()
 
-        # Get all emissions (contain more infos) to match them
-        all_em = self.get_emissions()
+        # Get all shows (contain more infos) to match them
+        all_em = self.get_shows()
 
-        # Get more infos for repertoire emissions
-        emissions = {k: all_em[k] for k in all_em if k in rep_em}
-        page_repertoire.set_emissions(emissions)
+        # Get more infos for repertoire shows
+        shows = {k: all_em[k] for k in all_em if k in rep_em}
+        page_repertoire.set_shows(shows)
 
         # Set proxies
-        self._set_bos_proxies(emissions.values())
+        self._set_bos_proxies(shows.values())
 
         return page_repertoire
 
@@ -116,36 +116,36 @@ class Client:
 
         return search
 
-    def get_emission_by_name(self, emission_name):
-        emissions = self.get_emissions()
-        emission_name_upper = emission_name.upper()
+    def get_show_by_name(self, show_name):
+        shows = self.get_shows()
+        show_name_upper = show_name.upper()
         candidates = []
 
         # Fill candidates
-        for emid, emission in emissions.items():
+        for emid, show in shows.items():
             candidates.append(str(emid))
-            candidates.append(emission.get_title().upper())
+            candidates.append(show.get_title().upper())
 
         # Get close matches
-        close_matches = difflib.get_close_matches(emission_name_upper,
+        close_matches = difflib.get_close_matches(show_name_upper,
                                                   candidates)
 
         # No match at all
         if not close_matches:
-            raise NoMatchException(emission_name)
+            raise NoMatchException(show_name)
 
         # No exact match
-        if close_matches[0] != emission_name_upper:
-            raise NoMatchException(emission_name, close_matches)
+        if close_matches[0] != show_name_upper:
+            raise NoMatchException(show_name, close_matches)
 
         # Exact match
-        for emid, emission in emissions.items():
-            exact_matches = [str(emid), emission.get_title().upper()]
-            if emission_name_upper in exact_matches:
-                return emission
+        for emid, show in shows.items():
+            exact_matches = [str(emid), show.get_title().upper()]
+            if show_name_upper in exact_matches:
+                return show
 
-    def get_episode_by_name(self, emission, episode_name):
-        episodes = self.get_emission_episodes(emission)
+    def get_episode_by_name(self, show, episode_name):
+        episodes = self.get_show_episodes(show)
         episode_name_upper = episode_name.upper()
         candidates = []
 
@@ -196,11 +196,11 @@ class Client:
         except requests.exceptions.Timeout:
             raise toutv.exceptions.RequestTimeout(url, timeout)
 
-        # Extract emission ID
+        # Extract show ID
         regex = r'program-(\d+)'
-        emission_m = Client._find_last(regex, r.text)
-        if emission_m is None:
-            raise ClientError('Cannot read emission information for URL "{}"'.format(url))
+        show_m = Client._find_last(regex, r.text)
+        if show_m is None:
+            raise ClientError('Cannot read show information for URL "{}"'.format(url))
 
         # Extract episode ID
         regex = r'media-(\d+)'
@@ -208,14 +208,14 @@ class Client:
         if episode_m is None:
             raise ClientError('Cannot read episode information for URL "{}"'.format(url))
 
-        # Find emission and episode
-        emid = emission_m
+        # Find show and episode
+        emid = show_m
         ep_name = episode_m
 
         try:
-            emission = self.get_emission_by_name(emid)
-            episode = self.get_episode_by_name(emission, ep_name)
+            show = self.get_show_by_name(emid)
+            episode = self.get_episode_by_name(show, ep_name)
         except NoMatchException as e:
-            raise ClientError('Cannot read emission/episode information for URL "{}"'.format(url))
+            raise ClientError('Cannot read show/episode information for URL "{}"'.format(url))
 
         return episode

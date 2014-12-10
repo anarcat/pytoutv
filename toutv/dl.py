@@ -142,14 +142,14 @@ class Downloader:
 
     def _gen_filename(self):
         # Remove illegal characters from filename
-        emission_title = self._episode.get_emission().Title
+        show_title = self._episode.get_show().Title
         episode_title = self._episode.Title
         if self._episode.SeasonAndEpisode is not None:
             sae = self._episode.SeasonAndEpisode
             episode_title = '{} {}'.format(sae, episode_title)
         br = self._bitrate // 1000
         episode_title = '{} {}kbps'.format(episode_title, br)
-        filename = '{}.{}.ts'.format(emission_title, episode_title)
+        filename = '{}.{}.ts'.format(show_title, episode_title)
         regex = r'[^ \'a-zA-Z0-9áàâäéèêëíìîïóòôöúùûüÁÀÂÄÉÈÊËÍÌÎÏÓÒÔÖÚÙÛÜçÇ()._-]'
         filename = re.sub(regex, '', filename)
         filename = re.sub(r'\s', '.', filename)

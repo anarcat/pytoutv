@@ -296,7 +296,7 @@ Voici quelques exemples d'utilisation de l'interface en ligne de commande.
     Episode: Loi 101 : Le malaise de René Lévesque (1re partie)  [1481687502]
 
       * Air date: 2010-04-27
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       En 1976, le Parti québécois remporte pour la première fois les élections sur
       la promesse d’être un bon gouvernement. Sans avoir mis la question de la
@@ -307,7 +307,7 @@ Voici quelques exemples d'utilisation de l'interface en ligne de commande.
     Episode: Loi 101 : le combat de Camille Laurin (2e partie)  [1485812723]
 
       * Air date: 2010-05-04
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       La loi 101 sera, pour Camille Laurin, le combat de sa vie. Il s’entoure
       d’abord des meilleurs esprits de son temps pour rédiger la Charte de la langue
@@ -320,7 +320,7 @@ Voici quelques exemples d'utilisation de l'interface en ligne de commande.
     Episode: Sommet des Amériques et Sommet des peuples  [1498400939]
 
       * Air date: 2010-05-18
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       En 2001, un sommet parallèle s’organise dans la basse-ville de Québec pour
       répliquer aux négociations officielles d’un traité de libre-échange des trois
@@ -333,7 +333,7 @@ Voici quelques exemples d'utilisation de l'interface en ligne de commande.
     Episode: L'humour politique II : Les années 70  [1573008143]
 
       * Air date: 2010-08-17
-      * Emission ID: 1480980995
+      * Show ID: 1480980995
 
       Les années 70 sont fertiles en bouleversements. C’est l’ère des imitateurs, de
       la montée du féminisme et le début de l’humour au féminin. Invités : Jean-Guy
