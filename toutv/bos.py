@@ -376,7 +376,7 @@ class Episode(_Bo, _ThumbnailProvider):
         self.TitleID = None
         self.TitleSearch = None
         self.Url = None
-        self.UrlShow = None
+        self.UrlEmission = None
         self.Year = None
         self.iTunesLinkUrl = None
 
@@ -534,7 +534,7 @@ class SearchResults(_Bo):
 
 class SearchResultData(_Bo):
     def __init__(self):
-        self.Show = None
+        self.Emission = None
         self.Episode = None
 
     def get_show(self):

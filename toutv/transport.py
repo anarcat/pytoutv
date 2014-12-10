@@ -81,9 +81,9 @@ class JsonTransport(Transport):
     def get_shows(self):
         shows = {}
 
-        shows_dto = self._do_query('GetShows')
+        shows_dto = self._do_query('GetEmissions')
         for show_dto in shows_dto:
-            show = self._mapper.dto_to_bo(show_dto, bos.Show)
+            show = self._mapper.dto_to_bo(show_dto, bos.Emission)
             shows[show.Id] = show
 
         return shows
@@ -95,7 +95,7 @@ class JsonTransport(Transport):
             'showid': str(emid)
         }
 
-        episodes_dto = self._do_query('GetEpisodesForShow', params)
+        episodes_dto = self._do_query('GetEpisodesForEmission', params)
         for episode_dto in episodes_dto:
             episode = self._mapper.dto_to_bo(episode_dto, bos.Episode)
             episode.set_show(show)
@@ -109,9 +109,9 @@ class JsonTransport(Transport):
         repertoire = bos.Repertoire()
 
         # Shows
-        if 'Shows' in repertoire_dto:
+        if 'Emissions' in repertoire_dto:
             repertoire.Shows = {}
-            showrepertoires_dto = repertoire_dto['Shows']
+            showrepertoires_dto = repertoire_dto['Emissions']
             for showrepertoire_dto in showrepertoires_dto:
                 er = self._mapper.dto_to_bo(showrepertoire_dto,
                                             bos.ShowRepertoire)
